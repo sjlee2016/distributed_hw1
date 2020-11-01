@@ -38,18 +38,42 @@ pixel * flip(int width, int height, pixel * src){
 pixel * smooth (int width, int height, pixel * src){
     pixel * dest = (malloc)(sizeof(pixel) * width* height);
     double r,g,b;
+    int row, col; 
     for(int i = 0; i < height; i++){
         for(int j = 0 ; j < width; j++){
+            if (i == 0 || i == height - 1 || j == 0 || j == width - 1)
+            {
+                dest[i * width + j].R = src[i * width + j].R;
+                dest[i * width + j].G = src[i * width + j].G;
+                dest[i * width + j].B = src[i * width + j].B;
+                continue;
+            }
             b = 0; g = 0; r = 0; 
             for(int x = 0; x < 3; x++){
                 for(int y = 0; y < 3; y++){
-                    if(i-x-1 >= 0 && i+x-1 < height && j+y-1 >= 0 && j+y-1 < width){ // ignore if out of range 
-                    r += src[(i+x-1)*width+j+y-1].R;
-                    g += src[(i+x-1)*width+j+y-1].G;
-                    b += src[(i+x-1)*width+j+y-1].B;
+                    if(i-x-1 < 0){
+                        row = 0;
+                    }
+                    if(i+x-1 >= height){
+                        row = height - 1; 
+                    }
+                    if(j+y-1 < 0){
+                        col = 0;
+                    }
+                    if(j+y-1 >= width){
+                        col = width - 1; 
+                    }
+                    if(i-x-1 >= 0 && i+x-1 < height && j+y-1 >= 0 && j+y-1 < width){
+                        col = j+y-1;
+                        row = i+x-1; 
+                    }
+                    r += src[(row)*width+col].R;
+                    g += src[(row)*width+col].G;
+                    b += src[(row)*width+col].B;
+                    
                     }
                 }
-            }
+            
             dest[i*width+j].R = (unsigned char) (r/9);
             dest[i*width+j].G = (unsigned char) (g/9);
             dest[i*width+j].B = (unsigned char) (b/9);
