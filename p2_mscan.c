@@ -11,7 +11,7 @@ int main(int argc, char **argv){
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   startTime = MPI_Wtime(); 
   srand(time(NULL) + rank);
-  sbuf = rand() % 10; //[-10,10] random integer
+  sbuf = rand() % 50; //[-10,10] random integer
   printf("Process %i generated number : %d\n", rank, sbuf);
   MPI_Scan(&sbuf, &rbuf, 1, MPI_INT, MPI_SUM, MPI_COMM_WORLD);
   printf("Process %i's partial sum using MPI_Scan : %d\n", rank, rbuf);

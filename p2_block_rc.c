@@ -17,10 +17,10 @@ int main(int argc, char **argv){
   sbuf = rand() % 50;
   printf("Process %i generated number : %d\n", rank, sbuf);
   for(int dest = rank; dest <= size-1; dest++){ // send to from its rank to n-1 
-    MPI_Send(&sbuf, 1, MPI_INT, dest, 0, MPI_COMM_WORLD); 
+    MPI_Isend(&sbuf, 1, MPI_INT, dest, 0, MPI_COMM_WORLD,&req); 
   }
   for(int src = rank; src >= 0; src--){  
-    MPI_Recv(&temp, 1, MPI_INT, src, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
+    MPI_Recv(&temp, 1, MPI_INT, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
     rbuf += temp;
   }
   printf("Process %i's partial sum using MPI_Scan : %d\n", rank, rbuf);

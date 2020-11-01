@@ -10,15 +10,13 @@ typedef struct {
 }pixel; 
 
 void handle_comments(FILE *in){
-    
-	unsigned char c = getc(in);
-	while(c == '#' ){
-        while (getc(in) != '\n')
-        {
-            c = getc(in);
-        }
+    char c = fgetc(in);
+    char buf[1024]; 
+    if(c=='#'){
+        fgets(buf, 1024, in); 
+    }else{
+        ungetc(c,in);
     }
-	ungetc(c, in);
 }
 
 pixel * flip(int width, int height, pixel * src){
@@ -40,12 +38,12 @@ pixel * smooth (int width, int height, pixel * src){
     for(int i = 0; i < height; i++){
         for(int j = 0 ; j < width; j++){
             b = 0; g = 0; r = 0; 
-            for(int x = -1; x <=1; x++){
-                for(int y = -1; y <= 1; y++){
-                    if(i-x >= 0 && i+x < height && j+y >= 0 && j+y < width){ // ignore if out of range 
-                    r += src[(i+x)*width+j+y].R;
-                    g += src[(i+x)*width+j+y].G;
-                    b += src[(i+x)*width+j+y].B;
+            for(int x = 0; x <3; x++){
+                for(int y = 0; y <3; y++){
+                    if(i-x-1 >= 0 && i+x-1 < height && j+y-1 >= 0 && j+y-1 < width){ // ignore if out of range 
+                    r += src[(i+x-1)*width+j+y-1].R;
+                    g += src[(i+x-1)*width+j+y-1].G;
+                    b += src[(i+x-1)*width+j+y-1].B;
                     }
                 }
             }
@@ -74,17 +72,19 @@ void readHeader(int *w, int *h, FILE *in){
 	int mx;
 	char ch;
 	char pNum;
-	ch = fgetc(in);
-	pNum = fgetc(in);
+    handle_comments(in);
+    fscanf(in,"%c %c\n", &ch,&pNum);
     if(ch != 'P' || pNum != '6'){
         printf("Wrong image format!\n");
         errorFlag = 1; 
         return; 
     }
-    fscanf(in,"\n%d %d\n", w, h); 
-    fscanf(in,"%d\n", &mx); 
+    handle_comments(in);
+    fscanf(in,"%d %d\n", w, h); 
+    handle_comments(in);
+    fscanf(in,"%d\n", &mx);  
     if(mx != 255){
-        printf("Wrong image format.\n");
+        printf("Wrong image format. %d\n",mx);
         errorFlag = 1;
         return; 
     }
@@ -152,5 +152,5 @@ int main(int argc, char** argv){
                     return 0; 
     }
     end = clock(); 
-    printf("Serial program execution time : %lf\n", start-end);
+    printf("Serial program execution time : %lf\n", (float)(end - start) / CLOCKS_PER_SEC);
 }
