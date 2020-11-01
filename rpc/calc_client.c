@@ -13,6 +13,8 @@ int opHead = -1;
 char operatorStack[10000];
 int numberStack[10000];
 expr ex[100000];
+char expression[10000];
+char prompt[10000];
 int total = 0; 
 int getPrecedence(char c){
     if(c<='9' && c>='0'){ // is number
@@ -154,31 +156,56 @@ void calculator_prog_1(char *host)
             numberStack[++numHead] = *result_1;
         }
 
-        printf("result is %d\n", numberStack[numHead]);
+        printf("the answer is %d\n", numberStack[numHead]);
 #ifndef	DEBUG
 	clnt_destroy (clnt);
 #endif	 /* DEBUG */
 }
 
-
+void initializeStack(){
+    for(int i = 0; i < 10000; i++){
+        numberStack[i] = 0;
+        operatorStack[i]='\0';
+        expression[i]='\0';
+        prompt[i]='\0';
+    }
+    numHead = -1;
+    opHead = -1;
+    total = 0; 
+}
 int main (int argc, char *argv[])
 {
 	char *host;
-    char expression[10000] = {'\0',};
 	if (argc < 2) {
 		printf ("usage: %s server_host\n", argv[0]);
 		exit (1);
 	}
     host = argv[1];
-    printf("Insert expression : ");
-	scanf("%s",expression);
-    for(int i = 0; i < 10000; i++){
-        numberStack[i] = 0;
-        operatorStack[i]='\0';
+    initializeStack();
+    while(1){
+        initializeStack(); 
+        printf("Enter test to start or exit to quit\n");
+         scanf("%s",prompt);
+         if(strcmp(prompt,"exit")==0){
+             exit(0);
+         }
+        if(strcmp(prompt,"test")!=0){
+            printf("Please enter test to start calculation or exit to quit\n");
+        }else{
+            while(1){
+                initializeStack();
+                printf("> ");
+            scanf("%s",expression);
+            if(strcmp(expression,"exit")==0){
+                exit(0);
+            }
+            if(seperate(expression))
+                calculator_prog_1(host);
+        
+            }
+        }
     }
-    if(!seperate(expression))
-        return 0; 
-    calculator_prog_1 (host);
+        
 exit (0);
 }
 
