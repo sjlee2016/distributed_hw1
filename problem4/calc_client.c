@@ -15,7 +15,7 @@ int numberStack[10000];
 expr ex[100000];
 char expression[10000];
 char prompt[10000];
-int total = 0; 
+int total = 0;
 int getPrecedence(char c){
     if(c<='9' && c>='0'){ // is number
         return 0; 
@@ -132,7 +132,9 @@ void calculator_prog_1(char *host)
                 server_calculator_1_arg.operator = op;
                 result_1 = server_calculator_1(&server_calculator_1_arg,clnt);
                 if(result_1 == (int*)NULL){
+                    printf("call failed\n");
                     clnt_perror(clnt,"call failed");
+                    return; 
                 }
                 
                 numberStack[++numHead] = *result_1;
@@ -184,7 +186,7 @@ int main (int argc, char *argv[])
     initializeStack();
     while(1){
         initializeStack(); 
-        printf("Enter test to start or exit to quit\n");
+        printf("assignment > ");
          scanf("%s",prompt);
          if(strcmp(prompt,"exit")==0){
              exit(0);
@@ -192,20 +194,11 @@ int main (int argc, char *argv[])
         if(strcmp(prompt,"test")!=0){
             printf("Please enter test to start calculation or exit to quit\n");
         }else{
-            while(1){
-                initializeStack();
-                printf("> ");
             scanf("%s",expression);
-            if(strcmp(expression,"exit")==0){
-                exit(0);
-            }
             if(seperate(expression))
                 calculator_prog_1(host);
-        
-            }
         }
     }
         
 exit (0);
-}
-
+}  
